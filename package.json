@@ -1,0 +1,22 @@
+{
+  "name": "gimbot2.0",
+  "version": "1.0.0",
+  "description": "Second version of Gimbot",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShanesCode/Gimbot2.0.git"
+  },
+  "author": "Shane Massaad",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShanesCode/Gimbot2.0/issues"
+  },
+  "homepage": "https://github.com/ShanesCode/Gimbot2.0#readme",
+  "dependencies": {
+    "discord.js": "^12.2.0"
+  }
+}
