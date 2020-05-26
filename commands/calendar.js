@@ -1,3 +1,5 @@
+const sqlite3 = require('sqlite3').verbose();
+
 module.exports = {
 	name: 'calendar',
 	description: 'View the calendar of events for this month (NOT YET AVAILABLE)',

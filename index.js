@@ -72,10 +72,10 @@ client.on('message', message => {
 	}
 	catch (error) {
 		const guild = message.guild;
-		const botMaker = guild.ownerID;
+		//const serverOwner = guild.ownerID;
 
 		console.error(error);
-		message.reply(`There was an error trying to execute that command! <@${botMaker}> please fix.`);
+		message.reply(`There was an error trying to execute that command! <@${botMakerID}> please fix.`);
 	}
 });
 
