@@ -12,7 +12,7 @@ module.exports = {
         let eventExactDate = new Date();
         let eventDate = '';
 
-        let db = new sqlite3.Database('./db/events.db', (err) => {
+        const db = new sqlite3.Database('./db/events.db', (err) => {
 			if (err) {
               return console.error(err.message);
             }
@@ -38,7 +38,7 @@ module.exports = {
                     console.log(3);
                 }
                 else if (currentAttendees.includes(message.author.username)) {
-                    currentAttendees = currentAttendees.replace(message.author.username, '');
+                    currentAttendees = currentAttendees.replace(message.author.username, 'None');
                     console.log(4);
                 }
                 else {

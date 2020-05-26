@@ -1,5 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
 const Discord = require('discord.js');
+const { addToEvent, removeFromEvent } = require('./autoEventHandler.js');
+const client = new Discord.Client();
+const { eventChannelID } = require('../config.json');
 
 module.exports = {
 	name: 'event-add',
@@ -17,7 +20,7 @@ module.exports = {
 
         const guild = message.guild;
 
-        let db = new sqlite3.Database('./db/events.db', (err) => {
+        const db = new sqlite3.Database('./db/events.db', (err) => {
 			if (err) {
               return console.error(err.message);
             }
@@ -52,11 +55,37 @@ module.exports = {
                         { name: 'Description: ', value: rows.Description, inline: true },
                         { name: 'Host: ', value: rows.Host, inline: true },
                     )
-                    .setFooter(`Join by sending the message: "?event-join ${rows.ID}" `);
+                    .setFooter(`Join by reacting with the 📅\nor by sending the message: "?event-join ${rows.ID}" `);
 
-                message.channel.send(eventEmbed);
+                    guild.channels.cache.get(eventChannelID).send(eventEmbed)
+                    .then((botMessage) => {
+                        botMessage.react('📅');
+
+                        const filter = (reaction) => {
+                            return reaction.emoji.name === '📅';
+                        };
+
+                        const collector = botMessage.createReactionCollector(filter, { dispose: true });
+
+                        collector
+                            .on('collect', (reaction, user) => {
+                                console.log(`Collected ${reaction.emoji.name} from ${user.ID}`);
+                                if (!user.bot) {
+                                    addToEvent(user.username, rows.ID);
+                                }
+                            });
+                        collector
+                            .on('remove', (reaction, user) => {
+                                console.log(`Removed ${reaction.emoji.name} from ${user.ID}`);
+                                if (!user.bot) {
+                                    removeFromEvent(user.username, rows.ID);
+                                }
+                            });
+                    });
+
+
                 const roleID = guild.roles.cache.find(role => role.name.toUpperCase() === `${rows.Tag.toUpperCase()}`);
-                message.channel.send(`${roleID}`);
+                guild.channels.cache.get(eventChannelID).send(`${roleID}`);
 
             }
             else {

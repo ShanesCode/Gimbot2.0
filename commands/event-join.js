@@ -12,7 +12,7 @@ module.exports = {
         let eventExactDate = new Date();
         let eventDate = '';
 
-        let db = new sqlite3.Database('./db/events.db', (err) => {
+        const db = new sqlite3.Database('./db/events.db', (err) => {
 			if (err) {
               return console.error(err.message);
             }
@@ -52,6 +52,6 @@ module.exports = {
               return console.error(err.message);
             }
             console.log('Close the database connection.');
-          });
+        });
 	},
 };

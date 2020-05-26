@@ -8,7 +8,7 @@ module.exports = {
 
         const eventID = args[0];
 
-        let db = new sqlite3.Database('./db/events.db', (err) => {
+        const db = new sqlite3.Database('./db/events.db', (err) => {
 			if (err) {
               return console.error(err.message);
             }

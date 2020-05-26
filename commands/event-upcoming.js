@@ -11,7 +11,7 @@ module.exports = {
 
         const currentTimeYesterday = Date.now() - 86400000;
 
-        let db = new sqlite3.Database('./db/events.db', (err) => {
+        const db = new sqlite3.Database('./db/events.db', (err) => {
 			if (err) {
               return console.error(err.message);
             }
@@ -34,12 +34,12 @@ module.exports = {
                             .setTitle('Event')
                             .setThumbnail('https://cdn4.iconfinder.com/data/icons/small-n-flat/24/calendar-512.png')
                             .addFields(
-                                { name: 'Title: ', value: row.Title, inline: true },
-                                { name: 'Date: ', value: eventDate, inline: true },
-                                { name: 'Tag: ', value: row.Tag, inline: true },
-                                { name: 'Description: ', value: row.Description, inline: true },
-                                { name: 'Host: ', value: row.Host, inline: true },
-                                { name: 'Attendees: ', value: row.Attendees, inline: true },
+                                { name: 'Title: ',          value: row.Title, inline: true },
+                                { name: 'Date: ',           value: eventDate, inline: true },
+                                { name: 'Tag: ',            value: row.Tag, inline: true },
+                                { name: 'Description: ',    value: row.Description, inline: true },
+                                { name: 'Host: ',           value: row.Host, inline: true },
+                                { name: 'Attendees: ',      value: row.Attendees, inline: true },
                             )
                             .setFooter(`Join by sending the message: "?event-join ${row.ID}" `);
 
