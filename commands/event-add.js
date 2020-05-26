@@ -24,7 +24,7 @@ module.exports = {
             console.log('Connected to the events SQlite database.');
           });
 
-        db.get('INSERT INTO events(Title, Date, Tag, Description, Host, Attending) VALUES(?, ?, ?, ?, ?, ?)', [eventTitle, eventDatetime, eventTag, desc, message.author.username, 'None'], function(err) {
+        db.get('INSERT INTO events(Title, Date, Tag, Description, Host, Attendees) VALUES(?, ?, ?, ?, ?, ?)', [eventTitle, eventDatetime, eventTag, desc, message.author.username, 'None'], function(err) {
             if (err) {
                 return console.log(err.message);
             }
@@ -52,7 +52,7 @@ module.exports = {
                         { name: 'Description: ', value: rows.Description, inline: true },
                         { name: 'Host: ', value: rows.Host, inline: true },
                     )
-                    .setFooter(`Join by sending the message: "?event-attending ${rows.ID}" `);
+                    .setFooter(`Join by sending the message: "?event-join ${rows.ID}" `);
 
                 message.channel.send(eventEmbed);
                 const roleID = guild.roles.cache.find(role => role.name.toUpperCase() === `${rows.Tag.toUpperCase()}`);
@@ -60,7 +60,7 @@ module.exports = {
 
             }
             else {
-                message.channel.send('Broken');
+                message.channel.send('That didn\'t work. Did you make sure to use the right format? Eg: ````?event-add example event//5//celebration//this is an example event```');
             }
         });
 

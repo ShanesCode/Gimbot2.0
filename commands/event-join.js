@@ -1,8 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
 
 module.exports = {
-	name: 'event-attending',
-	description: 'Declare that you are attending an event',
+	name: 'event-join',
+	description: 'Add yourself to the list of attendees for an event via its ID',
 	cooldown: 5,
 	execute(message, args) {
 
@@ -24,19 +24,19 @@ module.exports = {
                 return console.log(err.message);
             }
             else {
-                currentAttendees = rows.Attending;
-                if (!currentAttendees == 'None') {
-                    currentAttendees = currentAttendees.concat(', ', message.author.username);
+                currentAttendees = rows.Attendees;
+                if (currentAttendees == 'None') {
+                    currentAttendees = message.author.username;
                 }
                 else {
-                    currentAttendees = message.author.username;
+                    currentAttendees = currentAttendees.concat(', ', message.author.username);
                 }
                 console.log('currentAttendees: ', currentAttendees);
                 eventTitle = rows.Title;
                 eventExactDate = new Date(parseFloat(rows.Date));
                 eventDate = eventExactDate.getDate() + '/' + (eventExactDate.getMonth() + 1) + '/' + eventExactDate.getFullYear();
 
-                db.run('UPDATE events SET Attending = ? WHERE ID = ?', [currentAttendees, eventID], (err) => {
+                db.run('UPDATE events SET Attendees = ? WHERE ID = ?', [currentAttendees, eventID], (err) => {
                     if (err) {
                         return console.log(err.message);
                     }

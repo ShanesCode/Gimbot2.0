@@ -1,6 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
 const Discord = require('discord.js');
 
+const { botMakerID } = require('../config.json');
+
 module.exports = {
 	name: 'event-upcoming',
 	description: 'Check out upcoming events',
@@ -37,16 +39,16 @@ module.exports = {
                                 { name: 'Tag: ', value: row.Tag, inline: true },
                                 { name: 'Description: ', value: row.Description, inline: true },
                                 { name: 'Host: ', value: row.Host, inline: true },
-                                { name: 'Attendees: ', value: row.Attending, inline: true },
+                                { name: 'Attendees: ', value: row.Attendees, inline: true },
                             )
-                            .setFooter(`Join by sending the message: "?event-attending ${row.ID}" `);
+                            .setFooter(`Join by sending the message: "?event-join ${row.ID}" `);
 
                         message.channel.send(eventEmbed);
                     });
 
                 }
                 else {
-                    message.channel.send('Broken');
+                    message.channel.send(`'That didn't work. ${botMakerID}, please take a look at event-upcoming. [ERROR CODE: 1]`);
                 }
             });
         }
@@ -71,16 +73,16 @@ module.exports = {
                                 { name: 'Tag: ',            value: row.Tag, inline: true },
                                 { name: 'Description: ',    value: row.Description, inline: true },
                                 { name: 'Host: ',           value: row.Host, inline: true },
-                                { name: 'Attendees: ',      value: row.Attending, inline: true },
+                                { name: 'Attendees: ',      value: row.Attendees, inline: true },
                             )
-                            .setFooter(`Join by sending the message: "?event-attending ${row.ID}" `);
+                            .setFooter(`Join by sending the message: "?event-join ${row.ID}" `);
 
                         message.channel.send(eventEmbed);
                     });
 
                 }
                 else {
-                    message.channel.send('Broken');
+                    message.channel.send(`'That didn't work. ${botMakerID}, please take a look at event-upcoming. [ERROR CODE: 2]`);
                 }
             });
         }
