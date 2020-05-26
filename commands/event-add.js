@@ -4,6 +4,8 @@ const { addToEvent, removeFromEvent } = require('./autoEventHandler.js');
 const client = new Discord.Client();
 const { eventChannelID } = require('../config.json');
 
+let botMessagePerm = {};
+
 module.exports = {
 	name: 'event-add',
 	description: 'Add an event to the calendar. Format: Title//DaysAway//Tag//Description',
@@ -59,13 +61,14 @@ module.exports = {
 
                     guild.channels.cache.get(eventChannelID).send(eventEmbed)
                     .then((botMessage) => {
-                        botMessage.react('📅');
+                        botMessagePerm = botMessage;
+                        botMessagePerm.react('📅');
 
                         const filter = (reaction) => {
                             return reaction.emoji.name === '📅';
                         };
 
-                        const collector = botMessage.createReactionCollector(filter, { dispose: true });
+                        const collector = botMessagePerm.createReactionCollector(filter, { dispose: true });
 
                         collector
                             .on('collect', (reaction, user) => {
