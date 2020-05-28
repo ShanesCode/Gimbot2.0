@@ -7,7 +7,7 @@ module.exports = {
 	cooldown: 1,
 	execute(message, args) {
 		const currentDateTime = new Date();
-		const currentMonth = 1 + currentDateTime.getMonth();
+		const currentMonth = currentDateTime.getMonth();
 		const currentYear = currentDateTime.getFullYear();
 
 		let month = currentMonth;
@@ -42,17 +42,25 @@ module.exports = {
 			year = args[1];
 		}
 
-		const numberOfDaysInMonth = calendarHandler.daysInMonth(month, year);
+		calendarHandler.getMonthAndYear(month, year);
+		const numberOfDaysInMonth = calendarHandler.daysInMonth();
 		console.log('month: ', month, ' year: ', year, ' monthLength: ', numberOfDaysInMonth);
 
 		const baseCalendarLength = 28;
 		const maxCalendarWidth = 7;
 
-		calendarHandler.getEventData(month, year);
+		calendarHandler.getEventData();
 
-		const calendar = calendarHandler.dateTemplate(maxCalendarWidth, numberOfDaysInMonth, baseCalendarLength);
+		setTimeout(function() {
+			const calendar = calendarHandler.calendarBuilder(
+				maxCalendarWidth,
+				numberOfDaysInMonth,
+				baseCalendarLength,
+			);
 
-		message.channel.send('```' + calendar + '```');
+			message.channel.send('```' + calendar + '```');
+			calendarHandler.clearEvents();
+		}, 3000);
 
 		/*
 			```

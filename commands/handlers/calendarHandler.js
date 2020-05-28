@@ -1,17 +1,31 @@
 const sqlite3 = require('sqlite3').verbose();
 
-function dateNumberRow(firstDateInRow, firstDateInNextRow, verticalChar, cellWidth) {
-    const dateArray = [];
+let events = [];
+
+const verticalChar = '|';
+const dateFloor = '|_______';
+const cellWidth = 7;
+const calendarCeiling = '________';
+
+const dateRow = verticalChar + dateSpacing(cellWidth);
+
+let month = 0;
+let year = 0;
+
+function constructRow(type, firstDateInRow, firstDateInNextRow) {
     let cellWidthReduc = 0;
     let dateNumber = firstDateInRow;
-    let dateNumberRowString = '';
+    let constructRowString = '';
     for (dateNumber; dateNumber < firstDateInNextRow; dateNumber++) {
-        dateArray.push(dateNumber);
-
-        cellWidthReduc = dateNumber.toString().length;
-        dateNumberRowString += verticalChar + dateNumber.toString() + dateSpacing(cellWidth - cellWidthReduc);
+        if (type == 'dateNumberRow') {
+            cellWidthReduc = dateNumber.toString().length;
+            constructRowString += verticalChar + dateNumber.toString() + dateSpacing(cellWidth - cellWidthReduc);
+        }
+        else if (type == 'dateEventRow') {
+            constructRowString += verticalChar + populateCalendar(dateNumber);
+        }
     }
-    return dateNumberRowString;
+    return constructRowString;
 }
 
 function dateSpacing(numberOfSpaces) {
@@ -19,35 +33,54 @@ function dateSpacing(numberOfSpaces) {
     return spaceChar.repeat(numberOfSpaces);
 }
 
-function baseCalendarRow(firstDateInRow, firstDateInNextRow, verticalChar, cellWidth, calendarWidth, dateRow, dateFloor) {
-            return dateNumberRow(firstDateInRow, firstDateInNextRow, verticalChar, cellWidth)
-            + '\n' + dateRow.repeat(calendarWidth) + '\n' + dateFloor.repeat(calendarWidth) + '\n';
+function baseCalendarRow(firstDateInRow, firstDateInNextRow, calendarWidth) {
+            return constructRow('dateNumberRow', firstDateInRow, firstDateInNextRow)
+            + '\n' + constructRow('dateEventRow', firstDateInRow, firstDateInNextRow) + '\n' + dateFloor.repeat(calendarWidth) + '\n';
 }
 
-function extraDatesRow(firstDateInRow, firstDateInNextRow, verticalChar, cellWidth, dateFloor, extraDates, dateEventsPlaceholder) {
-            return dateNumberRow(firstDateInRow, firstDateInNextRow, verticalChar, cellWidth)
-            + '\n' + dateEventsPlaceholder.repeat(extraDates) + '\n' + dateFloor.repeat(extraDates) + '\n';
+function extraDatesRow(firstDateInRow, firstDateInNextRow, extraDates) {
+            return constructRow('dateNumberRow', firstDateInRow, firstDateInNextRow)
+            + '\n' + constructRow('dateEventRow', firstDateInRow, firstDateInNextRow) + '\n' + dateFloor.repeat(extraDates) + '\n';
 }
 
-function populateCalendar() {
-    
+function populateCalendar(date) {
+    console.log('date: ', date);
+    let eventString = dateSpacing(cellWidth);
+    for(let i = 0; i < events.length; i++) {
+        if (events[i].eventDate == date) {
+            const title = events[i].eventTitle.split(' ')[0];
+            console.log('Event:', title, 'is being held on day:', date);
+
+            if (title.length == cellWidth) {
+                eventString = title;
+            }
+            else if (title.length > cellWidth) {
+                eventString = title.slice(0, 7);
+            }
+            else {
+                const fillerLength = (cellWidth - title.length);
+                const filler = ' ';
+                eventString = title + filler.repeat(fillerLength);
+            }
+        }
+    }
+
+    return eventString;
 }
 
 module.exports = {
-    daysInMonth: (month, year) => {
+    getMonthAndYear: (argMonth, argYear) => {
+        month = argMonth, year = argYear;
+        return;
+    },
+    daysInMonth: () => {
         return new Date(year, month + 1, 0).getDate();
     },
-    dateTemplate: (calendarWidth, numberOfDaysInMonth, baseCalendarLength) => {
-        const verticalChar = '|';
-        const dateFloor = '|_______';
-        const cellWidth = 7;
-		const calendarCeiling = '________';
-
-        const dateRow = verticalChar + dateSpacing(cellWidth);
-        const extraDates = numberOfDaysInMonth - baseCalendarLength;
-        const dateEventsPlaceholder = dateRow;
+    calendarBuilder: (calendarWidth, numberOfDaysInMonth, baseCalendarLength) => {
 
         const baseCalendarCeiling = calendarCeiling.repeat(calendarWidth) + '\n';
+
+        const extraDates = numberOfDaysInMonth - baseCalendarLength;
 
         const firstDateInRow1 = 1;
         const firstDateInRow2 = 1 + calendarWidth;
@@ -56,15 +89,13 @@ module.exports = {
         const firstDateInRow5 = 1 + 4 * calendarWidth;
 
         return  baseCalendarCeiling
-            + baseCalendarRow(firstDateInRow1, firstDateInRow2, verticalChar, cellWidth, calendarWidth, dateRow, dateFloor)
-            + baseCalendarRow(firstDateInRow2, firstDateInRow3, verticalChar, cellWidth, calendarWidth, dateRow, dateFloor)
-            + baseCalendarRow(firstDateInRow3, firstDateInRow4, verticalChar, cellWidth, calendarWidth, dateRow, dateFloor)
-            + baseCalendarRow(firstDateInRow4, firstDateInRow5, verticalChar, cellWidth, calendarWidth, dateRow, dateFloor)
-            + extraDatesRow(firstDateInRow5, numberOfDaysInMonth + 1, verticalChar, cellWidth, dateFloor, extraDates, dateEventsPlaceholder);
+            + baseCalendarRow(firstDateInRow1, firstDateInRow2, calendarWidth, dateRow)
+            + baseCalendarRow(firstDateInRow2, firstDateInRow3, calendarWidth, dateRow)
+            + baseCalendarRow(firstDateInRow3, firstDateInRow4, calendarWidth, dateRow)
+            + baseCalendarRow(firstDateInRow4, firstDateInRow5, calendarWidth, dateRow)
+            + extraDatesRow(firstDateInRow5, numberOfDaysInMonth + 1, extraDates);
     },
-
-    getEventData: (month, year) => {
-        const events = [];
+    getEventData: () => {
         const startOfMonth = new Date(year, month, 1).getTime();
         const endOfMonth = new Date(year, month + 1, 0).getTime();
 
@@ -80,15 +111,17 @@ module.exports = {
                 return console.log(err.message);
             }
             else if (rows) {
+                console.log('rows: ', rows);
 
                 rows.forEach((row) => {
                     const eventExactDate = new Date(parseFloat(row.Date));
                     const eventDate = eventExactDate.getDate();
                     const eventTitle = row.Title;
+                    console.log('eventTitle: ', eventTitle, 'eventDate: ', eventDate);
                     events.push({ eventTitle, eventDate });
                 });
 
-                return events;
+                return console.log('events1: ', events);
 
             }
             else {
@@ -102,5 +135,8 @@ module.exports = {
             }
             console.log('Close the database connection.');
         });
+    },
+    clearEvents: () => {
+        return events = [];
     },
 };
