@@ -15,7 +15,7 @@ Users can manually see the next 3 upcoming events with the ?event-upcoming comma
 
 ![image](https://user-images.githubusercontent.com/39972518/109936625-02f65900-7cc6-11eb-9d0c-064c88ba0a6a.png)
 
-Users can sign up to events and join the list of attendees with the ?event-attending command, followed by the ID of the event (displayed on the event post). Events can be deleted in a similar manner: ?event-remove ID.
+Users can sign up to events and join the list of attendees by reacting with the calendar emote (as seen in the previous picture - before the one directly above this comment) or with the ?event-attending command, followed by the ID of the event (displayed on the event post). Events can be deleted in a similar manner: ?event-remove ID.
 
 Upcoming events can be viewed in an ASCII calendar, by using the ?calendar command.
 
